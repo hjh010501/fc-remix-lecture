@@ -1,3 +1,4 @@
+import { createEmotionCache, MantineProvider } from "@mantine/core";
 import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -14,19 +15,23 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+createEmotionCache({ key: "mantine" });
+
 export default function App() {
   return (
-    <html lang="en">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <html lang="en">
+        <head>
+          <Meta />
+          <Links />
+        </head>
+        <body>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </body>
+      </html>
+    </MantineProvider>
   );
 }
