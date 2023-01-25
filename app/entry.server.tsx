@@ -27,5 +27,7 @@ export let handleDataRequest: HandleDataRequestFunction = async (
   response,
   { request }
 ) => {
-  return await cors(request, response);
+  return await cors(request, response, {
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  });
 };
