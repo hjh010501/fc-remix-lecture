@@ -17,8 +17,8 @@ export default function handleRequest(
 
   responseHeaders.set("Content-Type", "text/html");
 
-  return new Response("<!DOCTYPE html>" + injectStyles(markup, server), {
-    headers: responseHeaders,
+  return new Response(`<!DOCTYPE html>${injectStyles(markup, server)}`, {
     status: responseStatusCode,
+    headers: responseHeaders,
   });
 }
