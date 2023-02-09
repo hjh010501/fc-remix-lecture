@@ -20,7 +20,18 @@ createEmotionCache({ key: "mantine" });
 
 export default function App() {
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
+    <MantineProvider
+      withGlobalStyles
+      withNormalizeCSS
+      theme={{
+        globalStyles: (theme) => ({
+          a: {
+            color: "initial",
+            textDecoration: "none",
+          },
+        }),
+      }}
+    >
       <html lang="en">
         <head>
           <StylesPlaceholder />
