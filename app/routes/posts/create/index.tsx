@@ -6,12 +6,13 @@ import {
   PasswordInput,
   Space,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import { showNotification } from "@mantine/notifications";
 import qs from "qs";
@@ -28,9 +29,7 @@ interface IActionData {
   message: TMessage;
 }
 
-
 export const action: ActionFunction = async ({ request, params }) => {
-
   const data = qs.parse(await request.text()) as unknown as InputData;
 
   if (!data.password || data.password !== process.env.ADMIN_PASSWORD) {
@@ -39,43 +38,42 @@ export const action: ActionFunction = async ({ request, params }) => {
         title: "글 작성 실패",
         message: "패스워드가 일치하지 않습니다.",
         color: "red",
-      }
+      },
     });
   }
 
   if (data.title && data.content) {
-    const post = await createPost(
-      data.title,
-      data.content,
-    )
-    return redirect(`/`)
+    const post = await createPost(data.title, data.content);
+    return redirect(`/`);
   }
   return json<IActionData>({
     message: {
       title: "글 작성 실패",
       message: "제목과 내용을 모두 입력해주세요.",
       color: "red",
-    }
+    },
   });
 };
 
 export default function PostCreate() {
-
   const actionData = useActionData<IActionData>();
   const [message, setMessage] = useState<IActionData>();
 
   useEffect(() => {
     if (actionData) {
       setMessage(actionData);
-      showNotification({
-        title: actionData.message.title,
-        message: actionData.message.message,
-        color: actionData.message.color,
-      })
     }
+  }, [actionData]);
 
-  }, [actionData])
-
+  useEffect(() => {
+    if (message) {
+      showNotification({
+        title: message.message.title,
+        message: message.message.message,
+        color: message.message.color,
+      });
+    }
+  }, [message]);
 
   return (
     <Box
@@ -99,9 +97,15 @@ export default function PostCreate() {
         <PostUpload />
         <Space h="xl" />
         <Box sx={{ display: "flex", justifyContent: "end" }}>
-          <PasswordInput sx={{ minWidth: "200px" }} name="password" placeholder="관리자 비밀번호" />
+          <PasswordInput
+            sx={{ minWidth: "200px" }}
+            name="password"
+            placeholder="관리자 비밀번호"
+          />
           <Space w="xs" />
-          <Button color="red" type="submit">작성하기</Button>
+          <Button color="red" type="submit">
+            작성하기
+          </Button>
         </Box>
       </Form>
     </Box>

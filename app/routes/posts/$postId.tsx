@@ -1,47 +1,72 @@
-import { ActionIcon, Box, Button, Center, Divider, Menu, Modal, PasswordInput, Space, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Center,
+  Divider,
+  Menu,
+  Modal,
+  PasswordInput,
+  Space,
+  Text,
+  Title,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons";
 import { IconChevronLeft } from "@tabler/icons-react";
 import qs from "qs";
 import { useEffect, useState } from "react";
 import CommentItem from "~/components/Comment/Item";
+import CommentUpload from "~/components/Comment/Upload";
 import List from "~/components/List";
 import PostView from "~/components/Post/Viewer";
-import { deletePost, getPost, TPost } from "~/models/post.service";
+import type { TComment } from "~/models/comment.service";
+import { deleteComment } from "~/models/comment.service";
+import { getCommentPassword, updateComment } from "~/models/comment.service";
+import { createComment } from "~/models/comment.service";
+import type { TPost } from "~/models/post.service";
+import { deletePost, getPost } from "~/models/post.service";
 
 interface ILoaderData {
   post: TPost;
 }
 
-enum InputType {
+export enum InputType {
   DELETE_POST = "0",
+  CREATE_COMMENT = "1",
+  UPDATE_COMMENT = "2",
+  DELETE_COMMENT = "3",
 }
 
 type InputData = {
   action: InputType;
   id?: number;
   password: string;
+  commentId?: string;
+  commentContent?: string;
+  commentWriter?: string;
+  commentPassword?: string;
 };
 
 interface IActionData {
   message: TMessage;
-};
-
+}
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const postId = params.postId as string;
   const getPostResponse = await getPost(parseInt(postId));
   if (getPostResponse.data !== null) {
-    return json<ILoaderData>({ post: getPostResponse.data })
+    return json<ILoaderData>({ post: getPostResponse.data });
   } else {
     return redirect(`/`);
   }
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-
+  const postId = params.postId as string;
   const data = qs.parse(await request.text()) as unknown as InputData;
 
   switch (data.action) {
@@ -52,12 +77,63 @@ export const action: ActionFunction = async ({ request, params }) => {
             title: "삭제 실패",
             message: "비밀번호가 일치하지 않습니다.",
             color: "red",
-          }
+          },
         });
       }
       if (data.id) {
         const post = await deletePost(data.id);
         return redirect(`/`);
+      }
+    }
+    case InputType.CREATE_COMMENT: {
+      if (data.commentContent && data.commentWriter && data.commentPassword) {
+        const comment = await createComment(
+          parseInt(postId),
+          data.commentWriter,
+          data.commentContent,
+          data.commentPassword
+        );
+        return redirect(`/posts/${postId}`);
+      }
+    }
+    case InputType.UPDATE_COMMENT: {
+      if (data.commentId && data.commentContent) {
+        const comment = await getCommentPassword(parseInt(data.commentId));
+        if (data.commentPassword !== comment.data?.password) {
+          return json<IActionData>({
+            message: {
+              title: "수정 실패",
+              message: "비밀번호가 일치하지 않습니다.",
+              color: "red",
+            },
+          });
+        } else {
+          const comment = await updateComment(
+            parseInt(data.commentId),
+            data.commentContent
+          );
+          return redirect(`/posts/${postId}`);
+        }
+      }
+    }
+    case InputType.DELETE_COMMENT: {
+      if (data.commentId) {
+        const comment = await getCommentPassword(parseInt(data.commentId));
+        if (
+          data.commentPassword !== comment.data?.password &&
+          data.commentPassword !== process.env.ADMIN_PASSWORD
+        ) {
+          return json<IActionData>({
+            message: {
+              title: "삭제 실패",
+              message: "비밀번호가 일치하지 않습니다.",
+              color: "red",
+            },
+          });
+        } else {
+          const comment = await deleteComment(parseInt(data.commentId));
+          return redirect(`/posts/${postId}`);
+        }
       }
     }
   }
@@ -66,12 +142,11 @@ export const action: ActionFunction = async ({ request, params }) => {
       title: "처리 실패",
       message: "알 수 없는 오류가 발생했습니다.",
       color: "red",
-    }
+    },
   });
 };
 
 export default function PostId() {
-
   const loaderData = useLoaderData<ILoaderData>();
   const actionData = useActionData<IActionData>();
 
@@ -83,19 +158,22 @@ export default function PostId() {
   useEffect(() => {
     if (actionData) {
       setMessage(actionData);
-      showNotification({
-        title: actionData.message.title,
-        message: actionData.message.message,
-        color: actionData.message.color,
-      })
     }
+  }, [actionData]);
 
-  }, [actionData])
-
+  useEffect(() => {
+    if (message) {
+      showNotification({
+        title: message.message.title,
+        message: message.message.message,
+        color: message.message.color,
+      });
+    }
+  }, [message]);
 
   useEffect(() => {
     setPost(loaderData.post);
-  }, [loaderData.post])
+  }, [loaderData.post]);
 
   return (
     <Box
@@ -103,7 +181,13 @@ export default function PostId() {
         padding: "45px",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Link to="/">
             <ActionIcon>
@@ -116,16 +200,24 @@ export default function PostId() {
 
         <Menu shadow="md" width={200} position="left-start">
           <Menu.Target>
-            <ActionIcon><IconDotsVertical /></ActionIcon>
+            <ActionIcon>
+              <IconDotsVertical />
+            </ActionIcon>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Link to={`/posts/${post.id}/update`}>
               <Menu.Item icon={<IconPencil size={14} />}>글 수정하기</Menu.Item>
             </Link>
-            <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => {
-              setDeleteModalOpened(true)
-            }}>글 삭제하기</Menu.Item>
+            <Menu.Item
+              color="red"
+              icon={<IconTrash size={14} />}
+              onClick={() => {
+                setDeleteModalOpened(true);
+              }}
+            >
+              글 삭제하기
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
 
@@ -134,26 +226,39 @@ export default function PostId() {
           onClose={() => setDeleteModalOpened(false)}
           title="글 삭제"
         >
-          <Text align="center">글을 삭제하기 위해서는 비밀번호를 입력해 주세요</Text>
+          <Text align="center">
+            글을 삭제하기 위해서는 비밀번호를 입력해 주세요
+          </Text>
           <Space h="lg" />
           <Form method="post">
             <input type="hidden" name="id" value={post.id} />
             <Center>
-              <PasswordInput sx={{ minWidth: "200px" }} name="password" placeholder="관리자 비밀번호" />
+              <PasswordInput
+                sx={{ minWidth: "200px" }}
+                name="password"
+                placeholder="관리자 비밀번호"
+              />
             </Center>
             <Space h="lg" />
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button variant="default" onClick={() => setDeleteModalOpened(false)}>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                variant="default"
+                onClick={() => setDeleteModalOpened(false)}
+              >
                 취소
               </Button>
               <Space w="md" />
-              <Button color="red" type="submit" name="action" value={InputType.DELETE_POST}>
+              <Button
+                color="red"
+                type="submit"
+                name="action"
+                value={InputType.DELETE_POST}
+              >
                 삭제
               </Button>
             </Box>
           </Form>
         </Modal>
-
       </Box>
 
       <Divider mt={20} mb={15} />
@@ -163,13 +268,12 @@ export default function PostId() {
       <Divider mt={20} mb={20} />
       <Box>
         <Text>댓글 {post.comment.length}개</Text>
-
+        <Space h="lg" />
+        <CommentUpload />
         <List>
-          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
-          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
-          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
-          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
-          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+          {post.comment.map((comment: TComment, i: number) => {
+            return <CommentItem key={i} comment={comment} />;
+          })}
         </List>
       </Box>
     </Box>

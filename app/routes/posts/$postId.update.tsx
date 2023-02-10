@@ -1,134 +1,144 @@
 import {
-    ActionIcon,
-    Box,
-    Button,
-    Divider,
-    PasswordInput,
-    Space,
-    TextInput,
-    Title
+  ActionIcon,
+  Box,
+  Button,
+  Divider,
+  PasswordInput,
+  Space,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import { showNotification } from "@mantine/notifications";
 import qs from "qs";
 import { useEffect, useState } from "react";
 import PostUpload from "~/components/Post/Upload";
-import { getPost, TPost, updatePost } from "~/models/post.service";
+import type { TPost } from "~/models/post.service";
+import { getPost, updatePost } from "~/models/post.service";
 
 interface ILoaderData {
-    post: TPost;
+  post: TPost;
 }
 
 interface InputData {
-    id: string;
-    title: string;
-    content: string;
-    password: string;
+  id: string;
+  title: string;
+  content: string;
+  password: string;
 }
 
 interface IActionData {
-    message: TMessage;
+  message: TMessage;
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-    const postId = params.postId as string;
-    const getPostResponse = await getPost(parseInt(postId));
-    if (getPostResponse.data !== null) {
-        return json<ILoaderData>({ post: getPostResponse.data })
-    } else {
-        return redirect(`/`);
-    }
+  const postId = params.postId as string;
+  const getPostResponse = await getPost(parseInt(postId));
+  if (getPostResponse.data !== null) {
+    return json<ILoaderData>({ post: getPostResponse.data });
+  } else {
+    return redirect(`/`);
+  }
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const data = qs.parse(await request.text()) as unknown as InputData;
 
-    const data = qs.parse(await request.text()) as unknown as InputData;
-
-    if (!data.password || data.password !== process.env.ADMIN_PASSWORD) {
-        return json<IActionData>({
-            message: {
-                title: "글 수정 실패",
-                message: "패스워드가 일치하지 않습니다.",
-                color: "red",
-            }
-        });
-    }
-
-    if (data.id && data.title && data.content) {
-        const post = await updatePost(
-            parseInt(data.id),
-            data.title,
-            data.content,
-        )
-        return redirect(`/posts/${data.id}`)
-    }
+  if (!data.password || data.password !== process.env.ADMIN_PASSWORD) {
     return json<IActionData>({
-        message: {
-            title: "글 수정 실패",
-            message: "제목과 내용을 모두 입력해주세요.",
-            color: "red",
-        }
+      message: {
+        title: "글 수정 실패",
+        message: "패스워드가 일치하지 않습니다.",
+        color: "red",
+      },
     });
+  }
+
+  if (data.id && data.title && data.content) {
+    const post = await updatePost(parseInt(data.id), data.title, data.content);
+    return redirect(`/posts/${data.id}`);
+  }
+  return json<IActionData>({
+    message: {
+      title: "글 수정 실패",
+      message: "제목과 내용을 모두 입력해주세요.",
+      color: "red",
+    },
+  });
 };
 
 export default function PostUpdate() {
+  const loaderData = useLoaderData<ILoaderData>();
+  const actionData = useActionData<IActionData>();
 
-    const loaderData = useLoaderData<ILoaderData>();
-    const actionData = useActionData<IActionData>();
+  const [post, setPost] = useState(loaderData.post);
 
-    const [post, setPost] = useState(loaderData.post);
+  const [message, setMessage] = useState<IActionData>();
 
-    const [message, setMessage] = useState<IActionData>();
+  useEffect(() => {
+    setPost(loaderData.post);
+  }, [loaderData.post]);
 
-    useEffect(() => {
-        setPost(loaderData.post);
-    }, [loaderData.post])
+  useEffect(() => {
+    if (actionData) {
+      setMessage(actionData);
+    }
+  }, [actionData]);
 
-
-    useEffect(() => {
-        if (actionData) {
-            setMessage(actionData);
-            showNotification({
-                title: actionData.message.title,
-                message: actionData.message.message,
-                color: actionData.message.color,
-            })
-        }
-    }, [actionData])
-
-
-    return (
-        <Box
-            sx={{
-                padding: "45px",
-            }}
-        >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Link to={`/posts/${post.id}`}>
-                    <ActionIcon>
-                        <IconChevronLeft size={24} />
-                    </ActionIcon>
-                </Link>
-                <Space w="xs" />
-                <Title>글 수정</Title>
-            </Box>
-            <Divider mt={20} mb={20} />
-            <Form method="post">
-                <input type="hidden" name="id" defaultValue={post.id.toString()} />
-                <TextInput placeholder="제목" variant="filled" size="xl" name="title" defaultValue={post.title ?? ""} />
-                <Space h="xl" />
-                <PostUpload defaultValue={post.content} />
-                <Space h="xl" />
-                <Box sx={{ display: "flex", justifyContent: "end" }}>
-                    <PasswordInput sx={{ minWidth: "200px" }} name="password" placeholder="관리자 비밀번호" />
-                    <Space w="xs" />
-                    <Button color="red" type="submit">수정하기</Button>
-                </Box>
-            </Form>
+  useEffect(() => {
+    if (message) {
+      showNotification({
+        title: message.message.title,
+        message: message.message.message,
+        color: message.message.color,
+      });
+    }
+  }, [message]);
+  return (
+    <Box
+      sx={{
+        padding: "45px",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Link to={`/posts/${post.id}`}>
+          <ActionIcon>
+            <IconChevronLeft size={24} />
+          </ActionIcon>
+        </Link>
+        <Space w="xs" />
+        <Title>글 수정</Title>
+      </Box>
+      <Divider mt={20} mb={20} />
+      <Form method="post">
+        <input type="hidden" name="id" defaultValue={post.id.toString()} />
+        <TextInput
+          placeholder="제목"
+          variant="filled"
+          size="xl"
+          name="title"
+          defaultValue={post.title ?? ""}
+        />
+        <Space h="xl" />
+        <PostUpload defaultValue={post.content} />
+        <Space h="xl" />
+        <Box sx={{ display: "flex", justifyContent: "end" }}>
+          <PasswordInput
+            sx={{ minWidth: "200px" }}
+            name="password"
+            placeholder="관리자 비밀번호"
+          />
+          <Space w="xs" />
+          <Button color="red" type="submit">
+            수정하기
+          </Button>
         </Box>
-    );
+      </Form>
+    </Box>
+  );
 }

@@ -1,3 +1,5 @@
+import supabase from "./supabase";
+
 export type TComment = {
   id: number;
   writer: string | null;
@@ -6,24 +8,28 @@ export type TComment = {
   post_id: number | null;
 };
 
-import supabase from "./supabase";
+export async function getCommentPassword(id: number) {
+  return await supabase
+    .from("comment")
+    .select("password")
+    .eq("id", id)
+    .limit(1)
+    .single();
+}
 
 export async function createComment(
   post_id: number,
   writer: string,
   content: string,
-) {
-  return await supabase.from("comment").insert({ post_id, writer, content });
-}
-
-export async function updateComment(
-  id: number,
-  content: string,
+  password: string
 ) {
   return await supabase
     .from("comment")
-    .update({ content })
-    .eq("id", id);
+    .insert({ post_id, writer, content, password });
+}
+
+export async function updateComment(id: number, content: string) {
+  return await supabase.from("comment").update({ content }).eq("id", id);
 }
 
 export async function deleteComment(id: number) {

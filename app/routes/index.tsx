@@ -1,22 +1,20 @@
 import { Box, Button, Divider, Title } from "@mantine/core";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import List from "~/components/List";
-import { getPosts, TPost } from "~/models/post.service";
+import type { TPost } from "~/models/post.service";
+import { getPosts } from "~/models/post.service";
 import PostItem from "../components/Post/Item/index";
 
 interface ILoaderData {
   posts: Array<TPost>;
 }
 
-interface IActionData {
-  message: TMessage;
-}
-
 export const loader: LoaderFunction = async () => {
   const getPostResponse = await getPosts();
-  return json<ILoaderData>({ posts: getPostResponse.data ?? [] })
+  return json<ILoaderData>({ posts: getPostResponse.data ?? [] });
 };
 
 export default function Index() {

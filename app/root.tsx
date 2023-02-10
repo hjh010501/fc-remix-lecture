@@ -8,12 +8,12 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "@remix-run/react";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "나만의 테크 블로그",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -33,7 +33,6 @@ export default function App() {
         }),
       }}
     >
-
       <html lang="en">
         <head>
           <StylesPlaceholder />
@@ -49,7 +48,6 @@ export default function App() {
           <LiveReload />
         </body>
       </html>
-
-    </MantineProvider >
+    </MantineProvider>
   );
 }
