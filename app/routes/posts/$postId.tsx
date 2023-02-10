@@ -6,6 +6,8 @@ import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons";
 import { IconChevronLeft } from "@tabler/icons-react";
 import qs from "qs";
 import { useEffect, useState } from "react";
+import CommentItem from "~/components/Comment/Item";
+import List from "~/components/List";
 import PostView from "~/components/Post/Viewer";
 import { deletePost, getPost, TPost } from "~/models/post.service";
 
@@ -111,6 +113,7 @@ export default function PostId() {
           <Space w="xs" />
           <Title>{post.title}</Title>
         </Box>
+
         <Menu shadow="md" width={200} position="left-start">
           <Menu.Target>
             <ActionIcon><IconDotsVertical /></ActionIcon>
@@ -156,6 +159,18 @@ export default function PostId() {
       <Divider mt={20} mb={15} />
       <Box>
         <PostView content={post.content ?? "글이 없습니다."} />
+      </Box>
+      <Divider mt={20} mb={20} />
+      <Box>
+        <Text>댓글 {post.comment.length}개</Text>
+
+        <List>
+          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+          <CommentItem comment={{ id: 1, writer: "andy", content: "안녕하세요", created_at: "2022", post_id: 1 }} />
+        </List>
       </Box>
     </Box>
   );
