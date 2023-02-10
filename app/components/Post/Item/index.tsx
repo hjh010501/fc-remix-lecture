@@ -1,12 +1,14 @@
-import { Box, Title, Text, Space } from "@mantine/core";
+import { Box, Space, Text, Title } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import type { TPost } from "~/models/post.service";
 
 interface IPostItem {
-  post: TPost;
+  post: TPost
 }
 
 export default function PostItem({ post }: IPostItem) {
+  const createdAtDate = new Date(post.created_at ?? "");
+  const commentCount = Array.isArray(post.comment) && post.comment.length !== 0 ? post.comment[0].count : 0;
   return (
     <Box
       sx={{
@@ -20,17 +22,17 @@ export default function PostItem({ post }: IPostItem) {
       </Link>
       <Space h="xs" />
       <Link to={`/posts/${post.id}`}>
-        <Text>{post.content}</Text>
+        <Text lineClamp={3}>{post.content ? post.content.replace(/<[^>]+>/g, '') : "내용이 없습니다."}</Text>
       </Link>
       <Space h="xs" />
       <Box sx={{ display: "flex" }}>
         <Text size="xs" color="gray">
-          댓글 {post.commentCount}개
+          <>댓글 {commentCount}개</>
         </Text>
         <Space w="xs" />
         <Text size="xs" color="gray">
-          {post.createAt.toLocaleDateString()}{" "}
-          {post.createAt.toLocaleTimeString()}
+          {createdAtDate.toLocaleDateString()}{" "}
+          {createdAtDate.toLocaleTimeString()}
         </Text>
       </Box>
     </Box>
