@@ -17,11 +17,11 @@ export default function PostItem({ post }: IPostItem) {
         userSelect: "element",
       }}
     >
-      <Link to={`/posts/${post.id}`}>
+      <Link to={`/posts/${post.id}`} prefetch="intent">
         <Title order={3}>{post.title}</Title>
       </Link>
       <Space h="xs" />
-      <Link to={`/posts/${post.id}`}>
+      <Link to={`/posts/${post.id}`} prefetch="intent">
         <Text lineClamp={3}>{post.content ? post.content.replace(/<[^>]+>/g, '') : "내용이 없습니다."}</Text>
       </Link>
       <Space h="xs" />

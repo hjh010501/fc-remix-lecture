@@ -31,11 +31,11 @@ interface IActionData {
 export const loader: LoaderFunction = async ({ request, params }) => {
   const postId = params.postId as string;
   const getPostResponse = await getPost(parseInt(postId));
-  console.log(getPostResponse)
   if (getPostResponse.data !== null) {
     return json<ILoaderData>({ post: getPostResponse.data })
+  } else {
+    return redirect(`/`);
   }
-
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -117,7 +117,9 @@ export default function PostId() {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item icon={<IconPencil size={14} />}>글 수정하기</Menu.Item>
+            <Link to={`/posts/${post.id}/update`}>
+              <Menu.Item icon={<IconPencil size={14} />}>글 수정하기</Menu.Item>
+            </Link>
             <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => {
               setDeleteModalOpened(true)
             }}>글 삭제하기</Menu.Item>

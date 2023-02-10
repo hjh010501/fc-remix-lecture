@@ -8,8 +8,12 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useState } from "react";
 
-export default function PostUpload() {
-    const [content, setContent] = useState<string>("");
+export default function PostUpload({
+    defaultValue
+}: {
+    defaultValue?: string | null;
+}) {
+    const [content, setContent] = useState<string>(defaultValue ?? "");
 
     const editor = useEditor({
         extensions: [

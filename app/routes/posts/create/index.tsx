@@ -36,7 +36,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!data.password || data.password !== process.env.ADMIN_PASSWORD) {
     return json<IActionData>({
       message: {
-        title: "업로드 실패",
+        title: "글 작성 실패",
         message: "패스워드가 일치하지 않습니다.",
         color: "red",
       }
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
   return json<IActionData>({
     message: {
-      title: "업로드 실패",
+      title: "글 작성 실패",
       message: "제목과 내용을 모두 입력해주세요.",
       color: "red",
     }
