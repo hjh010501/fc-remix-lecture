@@ -11,7 +11,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import globalStyles from "./global-styles.css";
+import globalStyles from "~/styles/global.css";
+
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "나만의 테크 블로그",
