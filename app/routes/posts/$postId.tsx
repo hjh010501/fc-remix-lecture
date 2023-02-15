@@ -9,7 +9,7 @@ import {
   PasswordInput,
   Space,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
@@ -24,9 +24,7 @@ import CommentUpload from "~/components/Comment/Upload";
 import List from "~/components/List";
 import PostView from "~/components/Post/Viewer";
 import type { TComment } from "~/models/comment.service";
-import { deleteComment } from "~/models/comment.service";
-import { getCommentPassword, updateComment } from "~/models/comment.service";
-import { createComment } from "~/models/comment.service";
+import { createComment, deleteComment, getCommentPassword, updateComment } from "~/models/comment.service";
 import type { TPost } from "~/models/post.service";
 import { deletePost, getPost } from "~/models/post.service";
 
@@ -267,11 +265,11 @@ export default function PostId() {
       </Box>
       <Divider mt={20} mb={20} />
       <Box>
-        <Text>댓글 {post.comment.length}개</Text>
+        <Text>댓글 {(post.comment as TComment[]).length}개</Text>
         <Space h="lg" />
         <CommentUpload />
         <List>
-          {post.comment.map((comment: TComment, i: number) => {
+          {(post.comment as TComment[]).map((comment: TComment, i: number) => {
             return <CommentItem key={i} comment={comment} />;
           })}
         </List>

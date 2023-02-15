@@ -8,7 +8,7 @@ interface IPostItem {
 
 export default function PostItem({ post }: IPostItem) {
   const createdAtDate = new Date(post.created_at ?? "");
-  const commentCount = Array.isArray(post.comment) && post.comment.length !== 0 ? post.comment[0].count : 0;
+  const commentCount = (post.comment as { count: number }).count
   return (
     <Box
       sx={{

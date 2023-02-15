@@ -1,3 +1,4 @@
+import { TComment } from './comment.service';
 import supabase from "./supabase";
 
 export type TPost = {
@@ -5,7 +6,7 @@ export type TPost = {
   title: string | null;
   content: string | null;
   created_at: string | null;
-  comment: any;
+  comment: TComment | TComment[] | null | { count: number };
 };
 
 export async function getPosts() {
