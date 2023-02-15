@@ -9,7 +9,7 @@ import {
   PasswordInput,
   Space,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
@@ -24,7 +24,12 @@ import CommentUpload from "~/components/Comment/Upload";
 import List from "~/components/List";
 import PostView from "~/components/Post/Viewer";
 import type { TComment } from "~/models/comment.service";
-import { createComment, deleteComment, getCommentPassword, updateComment } from "~/models/comment.service";
+import {
+  createComment,
+  deleteComment,
+  getCommentPassword,
+  updateComment,
+} from "~/models/comment.service";
 import type { TPost } from "~/models/post.service";
 import { deletePost, getPost } from "~/models/post.service";
 

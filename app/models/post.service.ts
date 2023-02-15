@@ -1,4 +1,4 @@
-import { TComment } from './comment.service';
+import type { TComment } from "./comment.service";
 import supabase from "./supabase";
 
 export type TPost = {

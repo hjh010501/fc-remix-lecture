@@ -3,12 +3,12 @@ import { Link } from "@remix-run/react";
 import type { TPost } from "~/models/post.service";
 
 interface IPostItem {
-  post: TPost
+  post: TPost;
 }
 
 export default function PostItem({ post }: IPostItem) {
   const createdAtDate = new Date(post.created_at ?? "");
-  const commentCount = (post.comment as { count: number }).count
+  const commentCount = (post.comment as { count: number }).count;
   return (
     <Box
       sx={{
@@ -22,7 +22,11 @@ export default function PostItem({ post }: IPostItem) {
       </Link>
       <Space h="xs" />
       <Link to={`/posts/${post.id}`} prefetch="intent">
-        <Text lineClamp={3}>{post.content ? post.content.replace(/<[^>]+>/g, '') : "내용이 없습니다."}</Text>
+        <Text lineClamp={3}>
+          {post.content
+            ? post.content.replace(/<[^>]+>/g, "")
+            : "내용이 없습니다."}
+        </Text>
       </Link>
       <Space h="xs" />
       <Box sx={{ display: "flex" }}>
