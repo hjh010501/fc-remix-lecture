@@ -6,7 +6,7 @@ import {
   PasswordInput,
   Space,
   TextInput,
-  Title,
+  Title
 } from "@mantine/core";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { IconChevronLeft } from "@tabler/icons-react";
