@@ -6,7 +6,7 @@ export type TPost = {
   title: string | null;
   content: string | null;
   created_at: string | null;
-  comment: TComment | TComment[] | null | { count: number };
+  comment: TComment | TComment[] | null | { count: number }[];
 };
 
 export async function getPosts() {
