@@ -1,32 +1,46 @@
+import { Box, Button, Divider, Title } from "@mantine/core";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
+import List from "~/components/List";
+import type { TPost } from "~/models/post.service";
+import { getPosts } from "~/models/post.service";
+import PostItem from "../components/Post/Item/index";
+
+interface ILoaderData {
+  posts: Array<TPost>;
+}
+
+export const loader: LoaderFunction = async () => {
+  const getPostResponse = await getPosts();
+  return json<ILoaderData>({ posts: getPostResponse.data as Array<TPost> ?? [] });
+};
+
 export default function Index() {
+  const loaderData = useLoaderData<ILoaderData>();
+  const [posts] = useState(loaderData.posts);
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <Box
+      sx={{
+        padding: "45px",
+      }}
+    >
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Title>🍾 나만의 테크 블로그</Title>
+        <Link to="/posts/create">
+          <Button variant="light" color="red">
+            글쓰기
+          </Button>
+        </Link>
+      </Box>
+      <Divider mt={20} mb={15} />
+      <List>
+        {posts.map((post, i) => (
+          <PostItem key={i} post={post as TPost} />
+        ))}
+      </List>
+    </Box>
   );
 }
