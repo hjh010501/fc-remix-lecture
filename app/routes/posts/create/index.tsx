@@ -6,9 +6,9 @@ import {
   PasswordInput,
   Space,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
 import type { ActionFunction } from "@remix-run/node";
@@ -31,6 +31,8 @@ interface IActionData {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const data = qs.parse(await request.text()) as unknown as InputData;
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   if (!data.password || data.password !== process.env.ADMIN_PASSWORD) {
     return json<IActionData>({
@@ -56,6 +58,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function PostCreate() {
+  const navigation = useNavigation();
   const actionData = useActionData<IActionData>();
   const [message, setMessage] = useState<IActionData>();
 
@@ -92,18 +95,37 @@ export default function PostCreate() {
       </Box>
       <Divider mt={20} mb={20} />
       <Form method="post">
-        <TextInput placeholder="제목" variant="filled" size="xl" name="title" />
+        <TextInput
+          placeholder="제목"
+          variant="filled"
+          size="xl"
+          name="title"
+          disabled={navigation.state === "submitting"}
+        />
         <Space h="xl" />
-        <PostUpload />
+        <Box
+          sx={{
+            pointerEvents:
+              navigation.state === "submitting" ? "none" : "initial",
+          }}
+        >
+          <PostUpload />
+        </Box>
         <Space h="xl" />
         <Box sx={{ display: "flex", justifyContent: "end" }}>
           <PasswordInput
             sx={{ minWidth: "200px" }}
             name="password"
             placeholder="관리자 비밀번호"
+            disabled={navigation.state === "submitting"}
+            required
           />
           <Space w="xs" />
-          <Button color="red" type="submit">
+          <Button
+            color="red"
+            type="submit"
+            loading={navigation.state === "submitting"}
+          >
             작성하기
           </Button>
         </Box>

@@ -10,7 +10,7 @@ import {
   Text,
   Textarea,
 } from "@mantine/core";
-import { Form } from "@remix-run/react";
+import { Form, useFetcher } from "@remix-run/react";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons";
 import { useState } from "react";
 import type { TComment } from "~/models/comment.service";
@@ -18,9 +18,12 @@ import { InputType } from "../../../routes/posts/$postId";
 
 interface ICommentItem {
   comment: TComment;
+  isUpload?: boolean;
 }
 
-export default function CommentItem({ comment }: ICommentItem) {
+export default function CommentItem({ comment, isUpload }: ICommentItem) {
+  const fetcher = useFetcher();
+
   const createdAtDate = new Date(comment.created_at ?? "");
 
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
@@ -32,8 +35,10 @@ export default function CommentItem({ comment }: ICommentItem) {
         padding: "15px 0",
         borderBottom: "1px solid #eaeaea",
         userSelect: "element",
+        opacity: fetcher.state !== "idle" || isUpload ? 0.5 : 1,
       }}
     >
+      {JSON.stringify(fetcher)}
       <Box>
         <Box
           sx={{
@@ -88,7 +93,10 @@ export default function CommentItem({ comment }: ICommentItem) {
                 또는 작성자 비밀번호를 입력해 주세요
               </Text>
               <Space h="lg" />
-              <Form method="post" onSubmit={() => setDeleteModalOpened(false)}>
+              <fetcher.Form
+                method="post"
+                onSubmit={() => setDeleteModalOpened(false)}
+              >
                 <input type="hidden" name="commentId" value={comment.id} />
                 <Center>
                   <PasswordInput
@@ -115,7 +123,7 @@ export default function CommentItem({ comment }: ICommentItem) {
                     삭제
                   </Button>
                 </Box>
-              </Form>
+              </fetcher.Form>
             </Modal>
           </Box>
         </Box>
@@ -124,7 +132,7 @@ export default function CommentItem({ comment }: ICommentItem) {
           <Text>{comment.content}</Text>
         ) : (
           <Box>
-            <Form
+            <fetcher.Form
               method="post"
               onSubmit={() => {
                 setMode("view");
@@ -158,7 +166,7 @@ export default function CommentItem({ comment }: ICommentItem) {
                   수정하기
                 </Button>
               </Box>
-            </Form>
+            </fetcher.Form>
           </Box>
         )}
       </Box>
