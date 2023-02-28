@@ -36,6 +36,7 @@ export default function CommentItem({ comment, isUpload }: ICommentItem) {
         borderBottom: "1px solid #eaeaea",
         userSelect: "element",
         opacity: fetcher.state !== "idle" || isUpload ? 0.5 : 1,
+        color: fetcher.data && fetcher.data.error ? "red" : "inherit",
       }}
     >
       {JSON.stringify(fetcher)}
@@ -103,6 +104,7 @@ export default function CommentItem({ comment, isUpload }: ICommentItem) {
                     sx={{ minWidth: "300px" }}
                     name="commentPassword"
                     placeholder="관리자 또는 작성자 비밀번호"
+                    required
                   />
                 </Center>
                 <Space h="lg" />
@@ -143,6 +145,7 @@ export default function CommentItem({ comment, isUpload }: ICommentItem) {
                 name="commentContent"
                 placeholder="댓글을 입력하세요."
                 defaultValue={comment.content ?? ""}
+                required
               />
               <Space h="lg" />
               <Box sx={{ display: "flex", justifyContent: "end" }}>
@@ -151,6 +154,7 @@ export default function CommentItem({ comment, isUpload }: ICommentItem) {
                   sx={{ minWidth: "200px" }}
                   name="commentPassword"
                   placeholder="댓글 비밀번호"
+                  required
                 />
                 <Space w="xs" />
                 <Button variant="default" onClick={() => setMode("view")}>
