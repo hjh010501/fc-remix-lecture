@@ -1,9 +1,68 @@
-import { Box, Title } from "@mantine/core";
+import { Box, Button, Space, Title, Text } from "@mantine/core";
+import { Link } from "@remix-run/react";
+import type { User } from "@supabase/supabase-js";
 
-export default function Header() {
-    return (
-        <Box sx={{ height: "50px", display: "flex", alignItems: 'center', borderBottom: "1px solid #eee" }}>
+interface IHeader {
+  is_login: boolean;
+  user?: User | null;
+}
+
+export default function Header({ is_login, user }: IHeader) {
+  return (
+    <Box
+      sx={{
+        padding: "0 50px",
+        width: "calc(100% - 100px)",
+        maxWidth: "1100px",
+        margin: "0 auto",
+      }}
+    >
+      <Box
+        sx={{
+          height: "75px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Link to="/">
             <Title order={3}>Remix Community</Title>
+          </Link>
+          <Space w="xl" />
+          <Space w="xl" />
+          <Link to="/">
+            <Text
+              sx={{
+                color: "gray",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+            >
+              상점
+            </Text>
+          </Link>
         </Box>
-    )
+        <Box sx={{ display: "flex" }}>
+          {is_login ? (
+            <>
+              <Link to="/post/create">
+                <Button>글쓰기</Button>
+              </Link>
+              <Space w="xs" />
+              <Link to="/auth/sign-out">
+                <Button variant="light">로그아웃</Button>
+              </Link>
+            </>
+          ) : (
+            <Link to="/auth/sign-in">
+              <Button variant="light">로그인</Button>
+            </Link>
+          )}
+        </Box>
+      </Box>
+    </Box>
+  );
 }
