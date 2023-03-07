@@ -1,4 +1,22 @@
+import type { TComment } from "./comment.service";
 import supabase from "./supabase";
+
+export type TPost = {
+  id: number;
+  title: string | null;
+  content: string | null;
+  created_at: string;
+  writer: {
+    name: string;
+    user_id: string;
+  };
+  board: {
+    name: string;
+    path: string;
+  };
+  view: number;
+  comment: TComment | TComment[] | null | { count: number }[];
+};
 
 export async function getPosts() {
   return await supabase
@@ -20,7 +38,8 @@ export async function getPostByBoardId(board_id: number) {
 export async function getPostById(id: number) {
   return await supabase
     .from("post")
-    .select(`*, writer(name, user_id)`)
+    .select(`*, writer(name, user_id), comment(*, writer(name, user_id))`)
+    .order("created_at", { foreignTable: "comment", ascending: true })
     .eq("id", id)
     .single();
 }

@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Divider,
-  PasswordInput,
   Select,
   Space,
   TextInput,
@@ -20,11 +19,12 @@ import qs from "qs";
 import { useEffect, useState } from "react";
 import PostUpload from "~/components/Post/Upload";
 import { createPost } from "~/models/post.service";
+import type { TBoard } from "~/models/board.service";
 import { getBoards } from "~/models/board.service";
 import { authenticate, getUser } from "~/auth.server";
 
 interface ILoaderData {
-  boards: any;
+  boards: TBoard[];
 }
 
 interface InputData {
@@ -41,11 +41,11 @@ interface IActionData {
 export const loader: LoaderFunction = async ({ request }) => {
   await authenticate(request);
   const boards = await getBoards();
-  return json<ILoaderData>({ boards: boards.data });
+  return json<ILoaderData>({ boards: boards.data as TBoard[] });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const { accessToken, headers } = await authenticate(request);
+  const { headers } = await authenticate(request);
   const user = await getUser(request);
   const data = qs.parse(await request.text()) as unknown as InputData;
 
@@ -118,8 +118,8 @@ export default function PostCreate() {
             name="board_id"
             size="xl"
             placeholder="게시판"
-            data={boards.map((board: any) => ({
-              value: board.id,
+            data={boards.map((board) => ({
+              value: board.id.toString(),
               label: board.name,
             }))}
           />

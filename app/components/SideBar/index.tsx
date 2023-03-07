@@ -1,7 +1,8 @@
 import { Box, Title, Text, Space } from "@mantine/core";
 import { Link, useLocation } from "@remix-run/react";
+import type { TBoard } from "../../models/board.service";
 
-export default function SideBar({ boards }: { boards: any }) {
+export default function SideBar({ boards }: { boards: TBoard[] }) {
   const location = useLocation();
   const path = location.pathname.split("/")[1];
   return (
@@ -16,7 +17,7 @@ export default function SideBar({ boards }: { boards: any }) {
     >
       <Title order={4}>게시판</Title>
       <Space h="xs" />
-      {boards.map((board: any, i: number) => (
+      {boards.map((board, i: number) => (
         <Link to={`/${board.path}`} prefetch="intent" key={i}>
           <Text
             mt={3}

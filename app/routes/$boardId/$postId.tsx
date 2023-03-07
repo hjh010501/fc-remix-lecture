@@ -12,14 +12,8 @@ import {
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  Link,
-  Outlet,
-  useFetcher,
-  useLoaderData,
-  useOutletContext,
-  useParams,
-} from "@remix-run/react";
+import { Link, useFetcher, useLoaderData, useParams } from "@remix-run/react";
+import type { User } from "@supabase/supabase-js";
 import {
   IconChevronLeft,
   IconDotsVertical,
@@ -29,11 +23,17 @@ import {
 import qs from "qs";
 import { useState } from "react";
 import { authenticate, getUserToken } from "~/auth.server";
-import Header from "~/components/Header";
-import PostItem from "~/components/Post/Item";
+import CommentItem from "~/components/Comment/Item";
+import CommentUpload from "~/components/Comment/Upload";
 import PostView from "~/components/Post/Viewer";
-import SideBar from "~/components/SideBar";
-import { getBoardByPath, getBoards } from "~/models/board.service";
+import type { TComment } from "~/models/comment.service";
+import {
+  createComment,
+  deleteComment,
+  getCommentById,
+  updateComment,
+} from "~/models/comment.service";
+import type { TPost } from "~/models/post.service";
 import { deletePost, getPostById, updateViewById } from "~/models/post.service";
 import supabase from "~/models/supabase";
 import type { IActionData } from "../$boardId";
@@ -41,7 +41,7 @@ import type { IActionData } from "../$boardId";
 interface ILoaderData {
   is_login: boolean;
   user?: User | null;
-  post: any;
+  post: TPost;
 }
 
 export enum InputType {
@@ -53,6 +53,8 @@ export enum InputType {
 
 type InputData = {
   action: InputType;
+  commentId?: string;
+  commentContent?: string;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -88,8 +90,72 @@ export const action: ActionFunction = async ({ request, params }) => {
   switch (data.action) {
     case InputType.DELETE_POST: {
       if (user && user.id === post.data.writer.user_id) {
-        const post = await deletePost(postId);
+        await deletePost(postId);
         return redirect(`/${boardId}`);
+      } else {
+        return json<IActionData>({
+          message: {
+            title: "삭제 실패",
+            message: "권한이 없습니다.",
+            color: "red",
+          },
+        });
+      }
+    }
+    case InputType.CREATE_COMMENT: {
+      if (user && data.commentContent) {
+        await createComment(postId, user.id, data.commentContent);
+        return redirect(`/${boardId}/${postId}`);
+      } else {
+        return json<IActionData>({
+          message: {
+            title: "생성 실패",
+            message: "권한이 없습니다.",
+            color: "red",
+          },
+        });
+      }
+    }
+    case InputType.UPDATE_COMMENT: {
+      if (user && data.commentId && data.commentContent) {
+        const originalComment = await getCommentById(parseInt(data.commentId));
+        if (originalComment.data.writer !== user.id) {
+          return json<IActionData>({
+            message: {
+              title: "수정 실패",
+              message: "권한이 없습니다.",
+              color: "red",
+            },
+          });
+        }
+        await updateComment(parseInt(data.commentId), data.commentContent);
+
+        return redirect(`/${boardId}/${postId}`);
+      } else {
+        return json<IActionData>({
+          message: {
+            title: "수정 실패",
+            message: "권한이 없습니다.",
+            color: "red",
+          },
+        });
+      }
+    }
+    case InputType.DELETE_COMMENT: {
+      if (user && data.commentId) {
+        const originalComment = await getCommentById(parseInt(data.commentId));
+        if (originalComment.data.writer !== user.id) {
+          return json<IActionData>({
+            message: {
+              title: "삭제 실패",
+              message: "권한이 없습니다.",
+              color: "red",
+            },
+          });
+        }
+        await deleteComment(parseInt(data.commentId));
+
+        return redirect(`/${boardId}/${postId}`);
       } else {
         return json<IActionData>({
           message: {
@@ -128,7 +194,7 @@ export default function PostId() {
           <Title>{post.title}</Title>
         </Box>
 
-        {is_login && user.id === post.writer.user_id && (
+        {is_login && user && user.id === post.writer.user_id && (
           <>
             <Menu shadow="md" width={200} position="left-start">
               <Menu.Target>
@@ -190,6 +256,19 @@ export default function PostId() {
         <PostView content={post.content ?? "글이 없습니다."} />
       </Box>
       <Divider mt={20} mb="xs" />
+      <CommentUpload />
+      <Divider mt={20} mb={20} />
+      <Text weight={700}>댓글 {(post.comment as TComment[]).length}개</Text>
+      {(post.comment as TComment[]).map((comment, i: number) => {
+        return (
+          <CommentItem
+            key={i}
+            comment={comment}
+            is_owner={Boolean(user && comment.writer.user_id === user.id)}
+          />
+        );
+      })}
+      <Space mb={20} />
     </Box>
   );
 }

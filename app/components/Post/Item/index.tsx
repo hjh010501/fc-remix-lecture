@@ -1,7 +1,14 @@
 import { Badge, Box, Divider, Space, Text } from "@mantine/core";
 import { Link } from "@remix-run/react";
+import type { TPost } from "~/models/post.service";
 
-export default function PostItem({ post, path }: { post: any; path: string }) {
+export default function PostItem({
+  post,
+  path,
+}: {
+  post: TPost;
+  path: string;
+}) {
   return (
     <>
       <Link to={`/${path}/${post.id}`} prefetch="intent">

@@ -3,42 +3,23 @@ import {
   Box,
   Button,
   Divider,
-  Menu,
-  Modal,
   Space,
   TextInput,
-  Title,
 } from "@mantine/core";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  Outlet,
-  useLoaderData,
-  useOutletContext,
-  useParams,
-} from "@remix-run/react";
-import {
-  IconChevronLeft,
-  IconDotsVertical,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
+import { IconChevronLeft } from "@tabler/icons-react";
 import qs from "qs";
 import { authenticate } from "~/auth.server";
-import Header from "~/components/Header";
-import PostItem from "~/components/Post/Item";
 import PostUpload from "~/components/Post/Upload";
-import PostView from "~/components/Post/Viewer";
-import SideBar from "~/components/SideBar";
-import { getBoardByPath, getBoards } from "~/models/board.service";
-import { getPostById, updatePost, updateViewById } from "~/models/post.service";
+import type { TPost } from "~/models/post.service";
+import { getPostById, updatePost } from "~/models/post.service";
 import supabase from "~/models/supabase";
 
 interface ILoaderData {
-  post: any;
+  post: TPost;
 }
 
 interface InputData {
@@ -113,7 +94,7 @@ export default function PostIdUpdate() {
             variant="filled"
             size="xl"
             name="title"
-            defaultValue={post.title}
+            defaultValue={post.title as string}
           />
         </Box>
         <Divider mt={20} mb={15} />
