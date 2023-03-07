@@ -45,7 +45,7 @@ export async function getPostById(id: number) {
 }
 
 export async function updateViewById(id: number) {
-  return await supabase.rpc("increment", { x: 1, row_id: id });
+  return await supabase.rpc("post_view_increment", { x: 1, row_id: id });
 }
 
 export async function createPost(

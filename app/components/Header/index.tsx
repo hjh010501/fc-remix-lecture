@@ -1,5 +1,5 @@
 import { Box, Button, Space, Title, Text } from "@mantine/core";
-import { Link } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import type { User } from "@supabase/supabase-js";
 
 interface IHeader {
@@ -8,6 +8,7 @@ interface IHeader {
 }
 
 export default function Header({ is_login, user }: IHeader) {
+  const location = useLocation();
   return (
     <Box
       sx={{
@@ -32,10 +33,10 @@ export default function Header({ is_login, user }: IHeader) {
           </Link>
           <Space w="xl" />
           <Space w="xl" />
-          <Link to="/">
+          <Link to="/shop">
             <Text
               sx={{
-                color: "gray",
+                color: location.pathname === "/shop" ? "black" : "gray",
                 "&:hover": {
                   color: "black",
                 },

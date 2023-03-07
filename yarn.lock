@@ -2036,6 +2036,27 @@
   "resolved" "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz"
   "version" "1.1.2"
 
+"@tosspayments/payment__types@^1.58.1":
+  "integrity" "sha512-mLSjuhxE3lnSyactRmH6Xk1JL2IlLS0ygFt3+a9P8v2261Qjfe0RXW6m8ovzvd2OTgF0IQVRzmaELKe27XTIzQ=="
+  "resolved" "https://registry.npmjs.org/@tosspayments/payment__types/-/payment__types-1.58.1.tgz"
+  "version" "1.58.1"
+  dependencies:
+    "@tosspayments/sdk-constants" "^0.2.1"
+
+"@tosspayments/payment-sdk@^1.5.0":
+  "integrity" "sha512-IsNsHNkx3uzQsFxy7Gn2rmcbHxAJ+n5kvFzQmC8jQcaJtshHaGx1xjGEavH8GFSPO4KHkEeIY0bf3+Q3LoimFw=="
+  "resolved" "https://registry.npmjs.org/@tosspayments/payment-sdk/-/payment-sdk-1.5.0.tgz"
+  "version" "1.5.0"
+  dependencies:
+    "@tosspayments/payment__types" "^1.58.1"
+
+"@tosspayments/sdk-constants@^0.2.1":
+  "integrity" "sha512-svTqRO0vVs78UxG23pa4ywxsWEzVEiO6VYAMhKJClFYlnn1yqetFCL9aFzWwTYnChWuJu3OTC+SC1xslVf1Eqg=="
+  "resolved" "https://registry.npmjs.org/@tosspayments/sdk-constants/-/sdk-constants-0.2.1.tgz"
+  "version" "0.2.1"
+  dependencies:
+    "type-fest" "^2.11.2"
+
 "@ts-morph/common@~0.11.0":
   "integrity" "sha512-7hWZS0NRpEsNV8vWJzg7FEz6V8MaLNeJOmwmghqUXTpzk16V1LLZhdo+4QvE/+zv4cVci0OviuJFnqhEfoV3+g=="
   "resolved" "https://registry.npmjs.org/@ts-morph/common/-/common-0.11.1.tgz"
@@ -8583,6 +8604,11 @@
   "version" "0.21.3"
 
 "type-fest@^2.0.0":
+  "integrity" "sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA=="
+  "resolved" "https://registry.npmjs.org/type-fest/-/type-fest-2.19.0.tgz"
+  "version" "2.19.0"
+
+"type-fest@^2.11.2":
   "integrity" "sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA=="
   "resolved" "https://registry.npmjs.org/type-fest/-/type-fest-2.19.0.tgz"
   "version" "2.19.0"
