@@ -73,7 +73,7 @@ export default function App() {
               <Header is_login={is_login} user={user} />
             )}
 
-            <Outlet />
+            <Outlet context={{ user, is_login }} />
           </NotificationsProvider>
           <ScrollRestoration />
           <Scripts />

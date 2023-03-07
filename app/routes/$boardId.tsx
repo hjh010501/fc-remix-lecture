@@ -1,12 +1,15 @@
 import { Box, Space, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Outlet,
+  useActionData,
   useLoaderData,
   useOutletContext,
   useParams,
 } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import Header from "~/components/Header";
 import PostItem from "~/components/Post/Item";
 import SideBar from "~/components/SideBar";
@@ -16,6 +19,10 @@ import { getPostByBoardId } from "~/models/post.service";
 interface ILoaderData {
   boards: any;
   posts?: any;
+}
+
+export interface IActionData {
+  message: TMessage;
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -36,6 +43,26 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function BoardId() {
   const { boards, posts } = useLoaderData<ILoaderData>();
   const { boardId } = useParams();
+  const actionData = useActionData<IActionData>();
+  const [message, setMessage] = useState<TMessage>();
+
+  useEffect(() => {
+    console.log(actionData);
+    if (actionData) {
+      setMessage(actionData.message);
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (message) {
+      showNotification({
+        title: message.title,
+        message: message.message,
+        color: message.color,
+      });
+    }
+  }, [message]);
+
   return (
     <Box
       sx={{

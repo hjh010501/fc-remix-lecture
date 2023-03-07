@@ -20,7 +20,7 @@ export async function getPostByBoardId(board_id: number) {
 export async function getPostById(id: number) {
   return await supabase
     .from("post")
-    .select(`*, writer(name)`)
+    .select(`*, writer(name, user_id)`)
     .eq("id", id)
     .single();
 }
@@ -38,4 +38,12 @@ export async function createPost(
   return await supabase
     .from("post")
     .insert({ title, content, board_id, writer });
+}
+
+export async function updatePost(id: number, title: string, content: string) {
+  return await supabase.from("post").update({ title, content }).eq("id", id);
+}
+
+export async function deletePost(id: number) {
+  return await supabase.from("post").delete().eq("id", id);
 }
