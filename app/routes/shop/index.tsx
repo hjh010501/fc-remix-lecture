@@ -2,7 +2,7 @@ import { Box, Button, Grid, Text, Space, Title } from "@mantine/core";
 import { useState } from "react";
 import PointSelect from "~/components/Point/Select";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
-import { useLoaderData, useLocation } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { authenticate } from "~/auth.server";
@@ -33,7 +33,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function Shop() {
-  const location = useLocation();
   const { user, point } = useLoaderData<ILoaderData>();
   const [selected, setSelected] = useState(2000);
   return (
