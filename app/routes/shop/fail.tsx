@@ -10,7 +10,7 @@ import { authenticate } from "~/auth.server";
 import type { User } from "@supabase/supabase-js";
 import supabase from "~/models/supabase";
 import { updatePointByUserId } from "~/models/user.service";
-import { IconCheck } from "@tabler/icons-react";
+import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
 
 const clientKey = "test_ck_Lex6BJGQOVD9OPgzzvJrW4w2zNbg";
 
@@ -23,40 +23,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   if (!accessToken) return redirect("/auth/login");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser(accessToken);
-
-  if (!user) return redirect("/auth/login");
-
+  const code = new URL(request.url).searchParams.get("code");
+  const message = new URL(request.url).searchParams.get("message");
   const orderId = new URL(request.url).searchParams.get("orderId");
-  const paymentKey = new URL(request.url).searchParams.get("paymentKey");
-  const amount = new URL(request.url).searchParams.get("amount");
 
-  const data = await fetch("https://api.tosspayments.com/v1/payments/confirm", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic dGVzdF9za19vZXFSR2dZTzFyNXFPTWIxRWo1clFuTjJFeWF6Og==`,
-    },
-    body: JSON.stringify({
-      orderId,
-      paymentKey,
-      amount,
-    }),
-  });
-
-  const result = await data.json();
-
-  if (result.status === "DONE") {
-    await updatePointByUserId(user.id, result.totalAmount);
-  }
-
-  return json<ILoaderData>({ result: result });
+  return { code, message, orderId };
 };
 
 export default function Shop() {
-  const { result } = useLoaderData<ILoaderData>();
+  const data = useLoaderData<ILoaderData>();
   return (
     <Box
       sx={{
@@ -69,8 +44,12 @@ export default function Shop() {
     >
       <Title>포인트 구매완료</Title>
       <Space h="xl" />
-      <Alert icon={<IconCheck size="1rem" />} title="결제 완료">
-        포인트 구매가 완료되었습니다. Message: {JSON.stringify(result)}
+      <Alert
+        icon={<IconAlertCircle size="1rem" />}
+        title="결제 실패"
+        color="red"
+      >
+        포인트 구매를 실패하였습니다. Message: {JSON.stringify(data)}
       </Alert>
     </Box>
   );
