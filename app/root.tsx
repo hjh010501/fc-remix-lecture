@@ -1,4 +1,4 @@
-import { Box, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import { StylesPlaceholder } from "@mantine/remix";
 import type {
@@ -21,8 +21,6 @@ import type { User } from "@supabase/supabase-js";
 import globalStyles from "~/styles/global.css";
 import { getUserToken } from "./auth.server";
 import Header from "./components/Header";
-import SideBar from "./components/SideBar";
-import { getBoards } from "./models/board.service";
 import supabase from "./models/supabase";
 
 export interface IRootLoaderData {
@@ -70,7 +68,7 @@ export default function App() {
         <body>
           <NotificationsProvider>
             {!location.pathname.includes("/auth") && (
-              <Header is_login={is_login} user={user} />
+              <Header is_login={is_login} />
             )}
 
             <Outlet context={{ user, is_login }} />
