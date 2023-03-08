@@ -1,13 +1,11 @@
 import { Box, Button, Space, Title, Text } from "@mantine/core";
 import { Link, useLocation } from "@remix-run/react";
-import type { User } from "@supabase/supabase-js";
 
 interface IHeader {
   is_login: boolean;
-  user?: User | null;
 }
 
-export default function Header({ is_login, user }: IHeader) {
+export default function Header({ is_login }: IHeader) {
   const location = useLocation();
   return (
     <Box
