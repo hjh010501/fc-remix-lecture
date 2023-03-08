@@ -252,6 +252,13 @@ export default function PostId() {
         )}
       </Box>
       <Divider mt={20} mb={15} />
+      <Box sx={{ display: "flex" }}>
+        <Text>{post.writer.name}</Text>
+        <Space w="md" />
+        <Text>{new Date(post.created_at).toLocaleDateString()}</Text>
+        <Space w="md" />
+        <Text>조회 {post.view}회</Text>
+      </Box>
       <Box>
         <PostView content={post.content ?? "글이 없습니다."} />
       </Box>

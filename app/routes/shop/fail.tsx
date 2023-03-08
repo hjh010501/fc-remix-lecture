@@ -1,18 +1,9 @@
-import { Alert, Box, Button, Grid, Slider, Space, Title } from "@mantine/core";
-import { useState } from "react";
-import PointSelect from "~/components/Point/Select";
-import { loadTossPayments } from "@tosspayments/payment-sdk";
-import { useLoaderData, useLocation } from "@remix-run/react";
+import { Alert, Box, Space, Title } from "@mantine/core";
+import { useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { authenticate } from "~/auth.server";
-import type { User } from "@supabase/supabase-js";
-import supabase from "~/models/supabase";
-import { updatePointByUserId } from "~/models/user.service";
-import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
-
-const clientKey = "test_ck_Lex6BJGQOVD9OPgzzvJrW4w2zNbg";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 interface ILoaderData {
   result: any;
