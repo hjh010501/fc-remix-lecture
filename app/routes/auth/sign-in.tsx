@@ -49,7 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession({
+  return await createUserSession({
     request,
     access_token: data.session?.access_token as string,
     refresh_token: data.session?.refresh_token as string,
