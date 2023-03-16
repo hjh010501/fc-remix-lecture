@@ -15,7 +15,7 @@ export type TPost = {
     path: string;
   };
   view: number;
-  comment: TComment | TComment[] | null | { count: number }[];
+  comment: TComment | TComment[] | null;
 };
 
 export async function getPosts() {
