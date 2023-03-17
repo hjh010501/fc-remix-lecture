@@ -24,7 +24,7 @@ export async function getUserToken(request: Request): Promise<{
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
   const refreshToken = session.get("refreshToken");
-  const expirationDate = session.get("expirationDate");
+  const expirationDate = session.get("expires_at");
   return { accessToken, refreshToken, expirationDate };
 }
 
@@ -82,9 +82,6 @@ export async function authenticate(
     throw error;
   }
 }
-
-export const getExpireDate = (jwt: string): number =>
-  parseInt(JSON.parse(atob(jwt.split(".")[1])).exp);
 
 export async function createUserSession({
   request,
