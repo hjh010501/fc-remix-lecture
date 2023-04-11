@@ -7,7 +7,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
-import { InputType } from "~/routes/$boardId/$postId";
+import { InputType } from "~/routes/$boardId.$postId._index";
 
 export default function CommentUpload() {
   return (
