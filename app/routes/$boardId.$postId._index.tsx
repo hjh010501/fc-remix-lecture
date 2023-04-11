@@ -36,7 +36,7 @@ import {
 import type { TPost } from "~/models/post.service";
 import { deletePost, getPostById, updateViewById } from "~/models/post.service";
 import supabase from "~/models/supabase";
-import type { IActionData } from "../$boardId";
+import type { IActionData } from "./$boardId";
 
 interface ILoaderData {
   is_login: boolean;

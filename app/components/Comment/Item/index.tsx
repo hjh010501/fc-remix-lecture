@@ -12,7 +12,7 @@ import { useFetcher } from "@remix-run/react";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons";
 import { useState } from "react";
 import type { TComment } from "~/models/comment.service";
-import { InputType } from "~/routes/$boardId/$postId";
+import { InputType } from "~/routes/$boardId.$postId._index";
 
 interface ICommentItem {
   comment: TComment;
